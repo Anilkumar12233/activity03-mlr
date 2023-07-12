@@ -6,3 +6,87 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+
+
+
+```{r}
+library(tidyverse)
+library(tidyr)
+library(tidymodels)
+library(GGally)
+library(datarium)
+library(dplyr)
+library(plot3D)
+
+
+
+
+
+head(marketing)
+
+```
+```{r}
+library(dplyr)
+library(GGally)
+
+marketing %>%
+  select(sales, youtube, facebook, newspaper) %>%
+  GGally::ggpairs()
+
+```
+```{r}
+lm_spec <- linear_reg() %>%
+set_mode("regression") %>%
+set_engine("lm")
+
+lm_spec
+
+mlr_mod <- lm_spec %>% 
+fit(sales ~ youtube + facebook + newspaper, data = marketing)
+
+tidy(mlr_mod)
+```
+```{r}
+# 3D scatter plot
+plot3D::scatter3D(marketing$youtube,marketing$facebook,marketing$newspaper)
+```
+```{r}
+# A pairwise scatterplot matrix
+marketing %>%
+  select(sales, youtube, facebook, newspaper) %>%
+  ggpairs()
+```
+```{r}
+#fit the mlr model
+lm_spec <- linear_reg() %>%
+     set_mode("regression") %>%
+     set_engine("lm")
+ 
+mlr_mod <- lm_spec %>% fit(sales ~ youtube + facebook + newspaper,data=marketing)
+ 
+tidy(mlr_mod)
+```
+```{r}
+#fit the mlr model
+lm_spec <- linear_reg() %>%
+set_mode("regression") %>%
+set_engine("lm")
+
+int_mod <- lm_spec %>% 
+fit(sales ~ youtube + facebook + newspaper,data=marketing)
+
+tidy(int_mod)
+```
+
+```{r}
+# null model
+null_mod <- lm_spec %>% 
+fit(sales ~ 1, data = marketing)
+
+anova(
+  extract_fit_engine(mlr_mod),
+  extract_fit_engine(null_mod)
+)
+```
+
